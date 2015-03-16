@@ -24,7 +24,9 @@ trait LogicT[F[_], A] {
   }
 }
 
-object LogicT {
+object LogicT extends LogicTInstances
+
+sealed abstract class LogicTInstances0 {
 
   implicit def logicTMonadPlus[F[_]]: MonadPlus[LogicT[F, ?]] = new MonadPlus[LogicT[F, ?]] {
 
@@ -56,6 +58,17 @@ object LogicT {
     def apply[G[_]: Monad] = logicTMonadPlus[G]
   }
 
+  implicit def logicTFoldable[F[_]](implicit T: Foldable[F], S: Monad[F]): Foldable[LogicT[F, ?]] = new Foldable[LogicT[F, ?]] {
+
+    def foldMap[A, B](fa: LogicT[F, A])(f: A => B)(implicit M: Monoid[B]) =
+      T.fold(fa(S.pure(M.zero))(a => b => S.map(b)(M.append(f(a), _))))
+
+    def foldRight[A, B](fa: LogicT[F, A], z: => B)(f: (A, => B) => B) =
+      foldMap(fa)((a: A) => (Endo.endo(f(a, _: B)))) apply z
+  }
+}
+
+sealed abstract class LogicTInstances extends LogicTInstances0 {
   implicit def logicTMonadLogic[F[_]](implicit L: MonadLogic[F]): MonadLogic[LogicT[F, ?]] = new MonadLogic[LogicT[F, ?]] {
 
     override def map[A, B](lt: LogicT[F, A])(f: A => B) = logicTMonadPlus.map(lt)(f)
@@ -72,14 +85,5 @@ object LogicT {
         (a, logicTMonadTrans.liftM(ll))
       }))
     }
-  }
-
-  implicit def logicTFoldable[F[_]](implicit T: Foldable[F], S: Monad[F]): Foldable[LogicT[F, ?]] = new Foldable[LogicT[F, ?]] {
-
-    def foldMap[A, B](fa: LogicT[F, A])(f: A => B)(implicit M: Monoid[B]) =
-      T.fold(fa(S.pure(M.zero))(a => b => S.map(b)(M.append(f(a), _))))
-
-    def foldRight[A, B](fa: LogicT[F, A], z: => B)(f: (A, => B) => B) =
-      foldMap(fa)((a: A) => (Endo.endo(f(a, _: B)))) apply z
   }
 }
