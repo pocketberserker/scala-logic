@@ -64,7 +64,7 @@ object ScalaLogicBuild extends Build {
     licenses := Seq("MIT License" -> url("http://www.opensource.org/licenses/mit-license.php"))
   )
 
-  lazy val msgpack = Project(
+  lazy val logic = Project(
     id = "scala-logic",
     base = file("."),
     settings = buildSettings
