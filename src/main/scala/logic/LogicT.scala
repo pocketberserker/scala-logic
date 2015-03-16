@@ -73,4 +73,13 @@ object LogicT {
       }))
     }
   }
+
+  implicit def logicTFoldable[F[_]](implicit T: Foldable[F], S: Monad[F]): Foldable[LogicT[F, ?]] = new Foldable[LogicT[F, ?]] {
+
+    def foldMap[A, B](fa: LogicT[F, A])(f: A => B)(implicit M: Monoid[B]) =
+      T.fold(fa(S.pure(M.zero))(a => b => S.map(b)(M.append(f(a), _))))
+
+    def foldRight[A, B](fa: LogicT[F, A], z: => B)(f: (A, => B) => B) =
+      foldMap(fa)((a: A) => (Endo.endo(f(a, _: B)))) apply z
+  }
 }
