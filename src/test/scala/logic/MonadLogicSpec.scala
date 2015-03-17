@@ -1,22 +1,39 @@
 package logic
 
-import org.scalacheck.{Arbitrary, Gen, Prop, Properties}
-import Prop.forAll
+import scalaz._
+import LogicProperties._
+import scalaz.std.anyVal._
+import scalaz.std.list._
+import scalaz.std.option._
+import scalaz.std.tuple._
+import scalaz.scalacheck.ScalazArbitrary._
+import MonadLogic._
 
-object LogicProperties {
+class MonadLogicSpec extends SpecLite {
 
-  object monadLogic {
+  type KleisliList[A, B] = Kleisli[List, A, B]
+  type KleisliListInt[B] = KleisliList[Int, B]
 
-    def check[F[_], A](implicit M: MonadLogic[F], arbF: Arbitrary[F[A]], arbA: Arbitrary[A], arbTuple: Arbitrary[(A, F[A])]) = new Properties("monad logic") {
-      property("split empty") = (M.split(M.empty) == M.pure(None))
-      property("split values") = forAll { (a: A, m: F[A]) =>
-        M.split(M.plus(M.pure(a), m)) == M.pure(Some((a, m)))
-      }
-      property("reflect") = forAll { m: F[A] => M.bind(M.split(m))(MonadLogic.reflect(_)) == m }
+  checkAll(monadLogicLaw.split[List, Int])
+  checkAll(monadLogicLaw.reflect[List, Int])
+
+  implicit def KleisliListEqual(implicit M: Equal[List[Int]]): Equal[Kleisli[List, Int, Int]] = new Equal[Kleisli[List, Int, Int]] {
+    def equal(a1: Kleisli[List, Int, Int], a2: Kleisli[List, Int, Int]) = {
+      val mb1 = a1.run(0)
+      val mb2 = a2.run(0)
+      M.equal(mb1, mb2)
     }
   }
-}
 
-class ListMonadLogicSpec extends SpecLite {
-  checkAll(LogicProperties.monadLogic.check[List, AnyVal])
+  implicit def KleisliListOptEqual(implicit M: Equal[List[Option[(Int, Kleisli[List, Int, Int])]]])
+    : Equal[Kleisli[List, Int, Option[(Int, Kleisli[List, Int, Int])]]] = new Equal[Kleisli[List, Int, Option[(Int, Kleisli[List, Int, Int])]]] {
+    def equal(a1: Kleisli[List, Int, Option[(Int, Kleisli[List, Int, Int])]], a2: Kleisli[List, Int, Option[(Int, Kleisli[List, Int, Int])]]) = {
+      val mb1 = a1.run(0)
+      val mb2 = a2.run(0)
+      M.equal(mb1, mb2)
+    }
+  }
+
+  checkAll(monadLogicLaw.split[KleisliListInt, Int])
+  checkAll(monadLogicLaw.reflect[KleisliListInt, Int])
 }

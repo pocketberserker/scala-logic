@@ -1,7 +1,6 @@
 package logic
 
 import scalaz._
-import scalaz.std.list.listInstance
 
 trait MonadLogic[F[_]] extends MonadPlus[F] {
 
@@ -28,7 +27,9 @@ trait MonadLogic[F[_]] extends MonadPlus[F] {
     bind(bind(split(m))(maybe(_, empty[(A, F[A])])(pure(_)))) { case (a, _) => pure(a) }
 }
 
-object MonadLogic {
+object MonadLogic extends MonadLogicInstances with MonadLogicFunctions
+
+trait MonadLogicFunctions {
 
   def reflect[F[_], A](a: Option[(A, F[A])])(implicit L: MonadLogic[F]): F[A] =
     a match {
@@ -38,16 +39,40 @@ object MonadLogic {
 
   def lnot[F[_], A](m: F[A])(implicit L: MonadLogic[F]): F[Unit] =
     L.ifte(L.once(m), L.pure(()))(_ => L.empty)
+}
 
-  implicit val listLogic: MonadLogic[List] =
-    new MonadLogic[List] {
-      def split[A](l: List[A]) = l match {
-        case Nil => pure(None)
-        case x::xs => pure(Some((x, xs)))
-      }
-      def point[A](a: => A) = listInstance.point(a)
-      def bind[A, B](fa: List[A])(f: A => List[B]) = listInstance.bind(fa)(f)
-      def empty[A] = listInstance.empty[A]
-      def plus[A](a: List[A], b: => List[A]) = listInstance.plus(a, b)
+trait MonadLogicInstances0 {
+
+  import scalaz.Kleisli._
+
+  // MonadLogic[ReaderT[F, E, ?]]
+  implicit def kleisliLogic[F[_], E](implicit L: MonadLogic[F]): MonadLogic[Kleisli[F, E, ?]] = new MonadLogic[Kleisli[F, E, ?]] {
+    def point[A](a: => A) = kleisliMonadPlus.point(a)
+    def bind[A, B](fa: Kleisli[F, E, A])(f: A => Kleisli[F, E, B]) = kleisliMonadPlus.bind(fa)(f)
+    def empty[A] = kleisliMonadPlus.empty[A]
+    def plus[A](a: Kleisli[F, E, A], b: => Kleisli[F, E, A]) = kleisliMonadPlus.plus(a, b)
+
+    def split[A](rm: Kleisli[F, E, A]) =
+      Kleisli[F, E, Option[(A, Kleisli[F, E, A])]](e =>
+        L.bind(L.split(rm.run(e))) {
+          case None => L.pure(None)
+          case Some((a, m)) => L.pure(Some((a, kleisliMonadTrans.liftM(m))))
+        })
+  }
+}
+
+trait MonadLogicInstances extends MonadLogicInstances0 {
+
+  import scalaz.std.list.listInstance
+
+  implicit val listLogic: MonadLogic[List] = new MonadLogic[List] {
+    def split[A](l: List[A]) = l match {
+      case Nil => pure(None)
+      case x::xs => pure(Some((x, xs)))
     }
+    def point[A](a: => A) = listInstance.point(a)
+    def bind[A, B](fa: List[A])(f: A => List[B]) = listInstance.bind(fa)(f)
+    def empty[A] = listInstance.empty[A]
+    def plus[A](a: List[A], b: => List[A]) = listInstance.plus(a, b)
+  }
 }
