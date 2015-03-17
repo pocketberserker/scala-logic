@@ -1,26 +1,22 @@
 package logic
 
-import org.scalacheck.Arbitrary
-import org.scalacheck.Prop.forAll
-import org.scalatest.FunSpec
-import org.scalatest.prop.Checkers
+import org.scalacheck.{Arbitrary, Gen, Prop, Properties}
+import Prop.forAll
 
-abstract class MonadLogicSpec[F[_], A](implicit M: MonadLogic[F],
-  arbF: Arbitrary[F[A]], arbA: Arbitrary[A], arbTuple: Arbitrary[(A, F[A])]) extends FunSpec with Checkers {
+object LogicProperties {
 
-  describe("MonadLogic") {
+  object monadLogic {
 
-    it("split") {
-      check(M.split(M.empty) == M.pure(None))
-      check { (a: A, m: F[A]) =>
+    def check[F[_], A](implicit M: MonadLogic[F], arbF: Arbitrary[F[A]], arbA: Arbitrary[A], arbTuple: Arbitrary[(A, F[A])]) = new Properties("monad logic") {
+      property("split empty") = (M.split(M.empty) == M.pure(None))
+      property("split values") = forAll { (a: A, m: F[A]) =>
         M.split(M.plus(M.pure(a), m)) == M.pure(Some((a, m)))
       }
-    }
-
-    it("reflect") {
-      check { m: F[A] => M.bind(M.split(m))(MonadLogic.reflect(_)) == m }
+      property("reflect") = forAll { m: F[A] => M.bind(M.split(m))(MonadLogic.reflect(_)) == m }
     }
   }
 }
 
-class ListMonadLogicSpec extends MonadLogicSpec[List, AnyVal]
+class ListMonadLogicSpec extends SpecLite {
+  checkAll(LogicProperties.monadLogic.check[List, AnyVal])
+}

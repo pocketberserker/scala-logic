@@ -38,7 +38,6 @@ object ScalaLogicBuild extends Build {
     },
     libraryDependencies ++= Seq(
       scalaz,
-      scalatest % "test",
       scalacheck % "test",
       scalazScalaCheckBinding % "test"
     ),
@@ -74,7 +73,6 @@ object ScalaLogicBuild extends Build {
   object Dependencies {
     val scalazVersion = "7.1.1"
     val scalaz = "org.scalaz" %% "scalaz-core" % scalazVersion
-    val scalatest = "org.scalatest" %% "scalatest" % "2.2.4"
     val scalacheck = "org.scalacheck" %% "scalacheck" % "1.11.4"
     val scalazScalaCheckBinding = "org.scalaz" %% "scalaz-scalacheck-binding" % scalazVersion
   }
