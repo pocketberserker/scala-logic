@@ -47,10 +47,10 @@ trait MonadLogicInstances0 {
 
   // MonadLogic[ReaderT[F, E, ?]]
   implicit def kleisliLogic[F[_], E](implicit L: MonadLogic[F]): MonadLogic[Kleisli[F, E, ?]] = new MonadLogic[Kleisli[F, E, ?]] {
-    def point[A](a: => A) = kleisliMonadPlus.point(a)
-    def bind[A, B](fa: Kleisli[F, E, A])(f: A => Kleisli[F, E, B]) = kleisliMonadPlus.bind(fa)(f)
-    def empty[A] = kleisliMonadPlus.empty[A]
-    def plus[A](a: Kleisli[F, E, A], b: => Kleisli[F, E, A]) = kleisliMonadPlus.plus(a, b)
+    def point[A](a: => A) = kleisliMonadPlus[F, E].point[A](a)
+    def bind[A, B](fa: Kleisli[F, E, A])(f: A => Kleisli[F, E, B]) = kleisliMonadPlus[F, E].bind[A, B](fa)(f)
+    def empty[A] = kleisliMonadPlus[F, E].empty[A]
+    def plus[A](a: Kleisli[F, E, A], b: => Kleisli[F, E, A]) = kleisliMonadPlus[F, E].plus[A](a, b)
 
     def split[A](rm: Kleisli[F, E, A]) =
       Kleisli[F, E, Option[(A, Kleisli[F, E, A])]](e =>
