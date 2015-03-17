@@ -39,7 +39,8 @@ object ScalaLogicBuild extends Build {
     libraryDependencies ++= Seq(
       scalaz,
       scalatest % "test",
-      scalacheck % "test"
+      scalacheck % "test",
+      scalazScalaCheckBinding % "test"
     ),
     resolvers += "bintray/non" at "http://dl.bintray.com/non/maven",
     addCompilerPlugin("org.spire-math" % "kind-projector" % "0.5.2"  cross CrossVersion.binary),
@@ -71,8 +72,10 @@ object ScalaLogicBuild extends Build {
   )
 
   object Dependencies {
-    val scalaz = "org.scalaz" %% "scalaz-core" % "7.1.1"
+    val scalazVersion = "7.1.1"
+    val scalaz = "org.scalaz" %% "scalaz-core" % scalazVersion
     val scalatest = "org.scalatest" %% "scalatest" % "2.2.4"
-    val scalacheck = "org.scalacheck" %% "scalacheck" % "1.12.2"
+    val scalacheck = "org.scalacheck" %% "scalacheck" % "1.11.4"
+    val scalazScalaCheckBinding = "org.scalaz" %% "scalaz-scalacheck-binding" % scalazVersion
   }
 }
