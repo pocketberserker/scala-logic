@@ -41,7 +41,38 @@ trait MonadLogicFunctions {
     L.ifte(L.once(m), L.pure(()))(_ => L.empty)
 }
 
-trait MonadLogicInstances0 {
+trait MonadLogicInstances1 {
+
+  import scalaz.StateT._
+
+  implicit def stateTLogic[F[_], S](implicit L: MonadLogic[F]): MonadLogic[StateT[F, S, ?]] = new MonadLogic[StateT[F, S, ?]] {
+    def point[A](a: => A) = stateTMonadPlus[S, F].point[A](a)
+    def bind[A, B](fa: StateT[F, S, A])(f: A => StateT[F, S, B]) = stateTMonadPlus[S, F].bind[A, B](fa)(f)
+    def empty[A] = stateTMonadPlus[S, F].empty[A]
+    def plus[A](a: StateT[F, S, A], b: => StateT[F, S, A]) = stateTMonadPlus[S, F].plus[A](a, b)
+
+    def split[A](sm: StateT[F, S, A]) = StateT(s =>
+      L.bind(L.split(sm.run(s))) {
+        case None => L.pure((s, None))
+        case Some(((s2, a), m)) => L.pure((s2, Some((a, StateT(Function.const(m))))))
+      })
+
+    override def interleave[A](m1: StateT[F, S, A], m2: StateT[F, S, A]): StateT[F, S, A] = StateT(s =>
+      L.interleave(m1.run(s), m2.run(s))
+    )
+
+    override def >>-[A, B](m: StateT[F, S, A])(f: A => StateT[F, S, B]): StateT[F, S, B] = StateT(s =>
+      L.>>-(m.run(s)){ case (s2, a) => f(a).run(s2) }
+    )
+
+    override def ifte[A, B](t: StateT[F, S, A], el: StateT[F, S, B])(th: A => StateT[F, S, B]): StateT[F, S, B] =
+      StateT(s => L.ifte(t.run(s), el.run(s)){ case (s2, a) => th(a).run(s2) })
+
+    override def once[A](m: StateT[F, S, A]): StateT[F, S, A] = StateT(s => L.once(m.run(s)))
+  }
+}
+
+trait MonadLogicInstances0 extends MonadLogicInstances1 {
 
   import scalaz.Kleisli._
 

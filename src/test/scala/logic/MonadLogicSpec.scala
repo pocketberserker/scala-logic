@@ -2,20 +2,17 @@ package logic
 
 import scalaz._
 import LogicProperties._
-import scalaz.std.anyVal._
-import scalaz.std.list._
-import scalaz.std.option._
-import scalaz.std.tuple._
+import scalaz.std.AllInstances._
 import scalaz.scalacheck.ScalazArbitrary._
 import MonadLogic._
 
 class MonadLogicSpec extends SpecLite {
 
-  type KleisliList[A, B] = Kleisli[List, A, B]
-  type KleisliListInt[B] = KleisliList[Int, B]
-
   checkAll(monadLogicLaw.split[List, Int])
   checkAll(monadLogicLaw.reflect[List, Int])
+
+  type KleisliList[A, B] = Kleisli[List, A, B]
+  type KleisliListInt[B] = KleisliList[Int, B]
 
   implicit def KleisliListEqual(implicit M: Equal[List[Int]]): Equal[Kleisli[List, Int, Int]] = new Equal[Kleisli[List, Int, Int]] {
     def equal(a1: Kleisli[List, Int, Int], a2: Kleisli[List, Int, Int]) = {
@@ -36,4 +33,11 @@ class MonadLogicSpec extends SpecLite {
 
   checkAll(monadLogicLaw.split[KleisliListInt, Int])
   checkAll(monadLogicLaw.reflect[KleisliListInt, Int])
+
+  type StateTList[S, A] = StateT[List, S, A]
+  type StateTListInt[A] = StateTList[Int, A]
+
+  implicit def stateTListEqual: Equal[StateT[List, Int, Int]] = Equal[List[(Int, Int)]].contramap((_: StateTListInt[Int]).runZero[Int])
+
+  checkAll(monadLogicLaw.reflect[StateTListInt, Int])
 }
