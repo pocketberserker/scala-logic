@@ -26,7 +26,7 @@ trait LogicT[F[_], A] {
 
 object LogicT extends LogicTInstances
 
-sealed abstract class LogicTInstances0 {
+sealed abstract class LogicTInstances2 {
 
   implicit def logicTMonadPlus[F[_]]: MonadPlus[LogicT[F, ?]] = new MonadPlus[LogicT[F, ?]] {
 
@@ -68,7 +68,8 @@ sealed abstract class LogicTInstances0 {
   }
 }
 
-sealed abstract class LogicTInstances extends LogicTInstances0 {
+sealed abstract class LogicTInstances1 extends LogicTInstances2 {
+
   implicit def logicTMonadLogic[F[_]](implicit L: MonadLogic[F]): MonadLogic[LogicT[F, ?]] = new MonadLogic[LogicT[F, ?]] {
 
     override def map[A, B](lt: LogicT[F, A])(f: A => B) = logicTMonadPlus.map(lt)(f)
@@ -86,4 +87,49 @@ sealed abstract class LogicTInstances extends LogicTInstances0 {
       }))
     }
   }
+}
+
+sealed abstract class LogicTInstances0 extends LogicTInstances1 {
+
+  def logicTMonadReader[F[_, _], R](implicit F0: MonadReader[F, R]): MonadReader[({ type G[A, B] = LogicT[({ type H[T] = F[A, T] })#H, B] })#G, R] =
+    new LogicTMonadReader[F, R] {
+      implicit def F: MonadReader[F, R] = F0
+    }
+}
+
+sealed abstract class LogicTInstances extends LogicTInstances0 {
+  def logicTMonadState[F[_, _], S](implicit F0: MonadState[F, S]): MonadState[({ type G[A, B] = LogicT[({ type H[T] = F[A, T] })#H, B] })#G, S] =
+    new LogicTMonadState[F, S] {
+      implicit def F: MonadState[F, S] = F0
+    }
+}
+
+private trait LogicTMonadReader[F[_, _], R] extends MonadReader[({ type G[A, B] = LogicT[({ type H[T] = F[A, T] })#H, B] })#G, R] {
+
+  implicit def F: MonadReader[F, R]
+
+  type G[X] = F[R, X]
+
+  def point[A](a: => A) = LogicT.logicTMonadTrans.liftM[G, A](F.point(a))
+  def bind[A, B](fa: LogicT[G, A])(f: A => LogicT[G, B]): LogicT[G, B] = LogicT.logicTMonadPlus.bind(fa)(f)
+
+  def ask = LogicT.logicTMonadTrans.liftM[G, R](F.ask)
+  def local[A](f: R => R)(m: LogicT[G, A]): LogicT[G, A] = new LogicT[G, A] {
+    def apply[X](l: G[X])(sk: A => G[X] => G[X]) =
+      m(F.local(f)(l))(x => sk(x))
+  }
+}
+
+private trait LogicTMonadState[F[_, _], S] extends MonadState[({ type G[A, B] = LogicT[({ type H[T] = F[A, T] })#H, B] })#G, S] {
+
+  implicit def F: MonadState[F, S]
+
+  type G[X] = F[S, X]
+
+  def point[A](a: => A) = LogicT.logicTMonadTrans.liftM[G, A](F.point(a))
+  def bind[A, B](fa: LogicT[G, A])(f: A => LogicT[G, B]): LogicT[G, B] = LogicT.logicTMonadPlus.bind(fa)(f)
+
+  def init = LogicT.logicTMonadTrans.liftM[G, S](F.init)
+  def get = LogicT.logicTMonadTrans.liftM[G, S](F.get)
+  def put(s: S) = LogicT.logicTMonadTrans.liftM[G, Unit](F.put(s))
 }
