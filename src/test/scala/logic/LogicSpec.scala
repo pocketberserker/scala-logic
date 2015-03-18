@@ -12,7 +12,7 @@ object LogicSpec extends SpecLite with TestLogicInstances {
   checkAll(traverse.laws[Logic])
 
   object instances {
-    def functor[F[_] : Functor, A] = Functor[({type f[a] = Kleisli[F, A, a]})#f]
+    def functor[F[_] : Functor] = Functor[LogicT[F, ?]]
     def apply[F[_] : Apply] = Apply[LogicT[F, ?]]
     def plus[F[_] : Plus] = Plus[LogicT[F, ?]]
     def empty[F[_] : PlusEmpty] = PlusEmpty[LogicT[F, ?]]
