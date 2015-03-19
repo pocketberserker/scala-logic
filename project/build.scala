@@ -4,6 +4,7 @@ import sbtrelease._
 import xerial.sbt.Sonatype._
 import ReleaseStateTransformations._
 import com.typesafe.sbt.pgp.PgpKeys
+import sbtbuildinfo.Plugin._
 
 object ScalaLogicBuild extends Build {
   import Dependencies._
@@ -14,7 +15,8 @@ object ScalaLogicBuild extends Build {
 
   lazy val buildSettings = Seq(
     ReleasePlugin.releaseSettings,
-    sonatypeSettings
+    sonatypeSettings,
+    buildInfoSettings
   ).flatten ++ Seq(
     scalaVersion := "2.11.6",
     crossScalaVersions := Seq("2.10.5", scalaVersion.value),
@@ -43,6 +45,19 @@ object ScalaLogicBuild extends Build {
     ),
     resolvers += "bintray/non" at "http://dl.bintray.com/non/maven",
     addCompilerPlugin("org.spire-math" % "kind-projector" % "0.5.2"  cross CrossVersion.binary),
+    buildInfoKeys := Seq[BuildInfoKey](
+      organization,
+      name,
+      version,
+      scalaVersion,
+      sbtVersion,
+      scalacOptions,
+      licenses,
+      "scalazVersion" -> scalazVersion
+    ),
+    buildInfoPackage := "logic",
+    buildInfoObject := "BuildInfoScalaLogic",
+    sourceGenerators in Compile <+= buildInfo,
     ReleasePlugin.ReleaseKeys.releaseProcess := Seq[ReleaseStep](
       checkSnapshotDependencies,
       inquireVersions,
