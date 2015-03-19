@@ -61,7 +61,32 @@ object ScalaLogicBuild extends Build {
     ),
     organization := "com.github.pocketberserker",
     homepage := Some(url("https://github.com/pocketberserker/scala-logic")),
-    licenses := Seq("MIT License" -> url("http://www.opensource.org/licenses/mit-license.php"))
+    licenses := Seq("MIT License" -> url("http://www.opensource.org/licenses/mit-license.php")),
+    pomExtra :=
+      <developers>
+        <developer>
+          <id>pocketberserker</id>
+          <name>Yuki Nakayama</name>
+          <url>https://github.com/pocketberserker</url>
+        </developer>
+      </developers>
+      <scm>
+        <url>git@github.com:pocketberserker/scala-logic.git</url>
+        <connection>scm:git:git@github.com:pocketberserker/scala-logic.git</connection>
+        <tag>{if(isSnapshot.value) gitHash else { "v" + version.value }}</tag>
+      </scm>
+    ,
+    description := "logic programming monad for Scala",
+    pomPostProcess := { node =>
+      import scala.xml._
+      import scala.xml.transform._
+      def stripIf(f: Node => Boolean) = new RewriteRule {
+        override def transform(n: Node) =
+          if (f(n)) NodeSeq.Empty else n
+      }
+      val stripTestScope = stripIf { n => n.label == "dependency" && (n \ "scope").text == "test" }
+      new RuleTransformer(stripTestScope).transform(node)(0)
+    }
   )
 
   lazy val logic = Project(
