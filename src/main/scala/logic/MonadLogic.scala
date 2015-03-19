@@ -41,7 +41,15 @@ trait MonadLogicFunctions {
     L.ifte(L.once(m), L.pure(()))(_ => L.empty)
 }
 
-trait MonadLogicInstances1 {
+trait MonadLogicInstances2 {
+
+  implicit def writerTLogic[F[_], W](implicit L0: MonadLogic[F], M0: Monoid[W]): MonadLogic[WriterT[F, W, ?]] = new WriterTMonadLogic[F, W] {
+    implicit def L: MonadLogic[F] = L0
+    implicit def M: Monoid[W] = M0
+  }
+}
+
+trait MonadLogicInstances1 extends MonadLogicInstances2 {
 
   import scalaz.StateT._
 
@@ -106,4 +114,34 @@ trait MonadLogicInstances extends MonadLogicInstances0 {
     def empty[A] = listInstance.empty[A]
     def plus[A](a: List[A], b: => List[A]) = listInstance.plus(a, b)
   }
+}
+
+private trait WriterTMonadLogic[F[_], W] extends MonadLogic[WriterT[F, W, ?]] {
+
+  implicit def L: MonadLogic[F]
+  implicit def M: Monoid[W]
+
+  def tell(w: W): WriterT[F, W, Unit] = WriterT(L.pure((w, ())))
+
+  def point[A](a: => A) = WriterT.writerTMonad[F, W].point[A](a)
+  def bind[A, B](fa: WriterT[F, W, A])(f: A => WriterT[F, W, B]) = WriterT.writerTMonad[F, W].bind[A, B](fa)(f)
+  def empty[A] = WriterT(L.empty[(W, A)])
+  def plus[A](a: WriterT[F, W, A], b: => WriterT[F, W, A]) = WriterT(L.plus(a.run, b.run))
+
+  def split[A](wm: WriterT[F, W, A]) = WriterT(
+    L.bind(L.split(wm.run)) {
+      case None => L.pure((M.zero, None))
+      case Some(((w, a), m)) => L.pure((w, Some((a, WriterT(m)))))
+    })
+
+  override def interleave[A](m1: WriterT[F, W, A], m2: WriterT[F, W, A]): WriterT[F, W, A] =
+    WriterT(L.interleave(m1.run, m2.run))
+
+  override def >>-[A, B](m: WriterT[F, W, A])(f: A => WriterT[F, W, B]): WriterT[F, W, B] =
+    WriterT(L.>>-(m.run){ case (w, a) => tell(w).flatMap(_ => f(a)).run })
+
+  override def ifte[A, B](t: WriterT[F, W, A], el: WriterT[F, W, B])(th: A => WriterT[F, W, B]): WriterT[F, W, B] =
+    WriterT(L.ifte(t.run, el.run){ case (w, a) => tell(w).flatMap(_ => th(a)).run })
+
+  override def once[A](m: WriterT[F, W, A]): WriterT[F, W, A] = WriterT(L.once(m.run))
 }
