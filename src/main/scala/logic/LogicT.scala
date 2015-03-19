@@ -1,6 +1,7 @@
 package logic
 
 import scalaz._
+import Id._
 import scalaz.syntax.bind._
 
 trait LogicT[F[_], A] {
@@ -24,7 +25,15 @@ trait LogicT[F[_], A] {
   }
 }
 
-object LogicT extends LogicTInstances
+object LogicT extends LogicTInstances {
+
+  implicit val logicTraverse: Traverse[Logic] = new Traverse[Logic] {
+    def traverseImpl[F[_], A, B](l: Logic[A])(f: A => F[B])(implicit F: Applicative[F]) = {
+      def cons(b: B)(ll: Logic[B]): Logic[B] = logicTMonadPlus.plus(logicTMonadPlus.pure(b), ll)
+      l(F.pure(logicTMonadPlus[Id].empty[B]))(a => ft => F.ap(ft)(F.map(f(a))(cons _)))
+    }
+  }
+}
 
 sealed abstract class LogicTInstances3 {
 

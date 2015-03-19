@@ -4,7 +4,6 @@ import scalaz._
 import scalaz.std.anyVal._
 import scalaz.std.list._
 import scalaz.scalacheck.ScalazProperties._
-import Logic._
 
 object LogicSpec extends SpecLite with TestLogicInstances {
 
