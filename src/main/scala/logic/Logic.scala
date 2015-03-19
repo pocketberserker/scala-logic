@@ -6,11 +6,11 @@ import LogicT._
 
 object Logic {
 
-  def observe[A](l: Logic[A]): Id[Option[A]] = l.observe
+  def observe[A](l: Logic[A]): Option[A] = l.observe
 
-  def observeAll[A](l: Logic[A]): Id[List[A]] = l.observeAll
+  def observeAll[A](l: Logic[A]): List[A] = l.observeAll
 
-  def observeMany[A](l: Logic[A], n: Int)(implicit L: MonadLogic[Logic[?]]): Id[List[A]] =
+  def observeMany[A](l: Logic[A], n: Int)(implicit L: MonadLogic[Logic]): List[A] =
     l.observeMany(n)
 
   implicit val logicTraverse: Traverse[Logic] = new Traverse[Logic] {
