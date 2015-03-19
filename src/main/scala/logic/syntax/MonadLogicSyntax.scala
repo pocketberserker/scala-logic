@@ -14,6 +14,8 @@ final class MonadLogicOps[F[_],A] private[syntax](val self: F[A])(implicit val F
   final def ifte[B](el: F[B])(th: A => F[B]) = F.ifte(self, el)(th)
 
   final def once = F.once(self)
+
+  final def lnot = MonadLogic.lnot(self)
 }
 
 trait ToMonadLogicOps extends ToMonadPlusOps {
