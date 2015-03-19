@@ -91,27 +91,27 @@ sealed abstract class LogicTInstances2 extends LogicTInstances3 {
 
 sealed abstract class LogicTInstances1 extends LogicTInstances2 {
 
-  def logicTMonadReader[F[_, _], R](implicit F0: MonadReader[F, R]): MonadReader[({ type G[A, B] = LogicT[({ type H[T] = F[A, T] })#H, B] })#G, R] =
+  def logicTMonadReader[F[_, _], R](implicit F0: MonadReader[F, R]): MonadReader[Lambda[(A, B) => LogicT[F[A, ?], B]], R] =
     new LogicTMonadReader[F, R] {
       implicit def F: MonadReader[F, R] = F0
     }
 }
 
 sealed abstract class LogicTInstances0 extends LogicTInstances1 {
-  def logicTMonadState[F[_, _], S](implicit F0: MonadState[F, S]): MonadState[({ type G[A, B] = LogicT[({ type H[T] = F[A, T] })#H, B] })#G, S] =
+  def logicTMonadState[F[_, _], S](implicit F0: MonadState[F, S]): MonadState[Lambda[(A, B) => LogicT[F[A, ?], B]], S] =
     new LogicTMonadState[F, S] {
       implicit def F: MonadState[F, S] = F0
     }
 }
 
 sealed abstract class LogicTInstances extends LogicTInstances0 {
-  def logicTMonadError[F[_, _], E](implicit F0: MonadError[F, E]): MonadError[({ type G[A, B] = LogicT[({ type H[T] = F[A, T] })#H, B] })#G, E] =
+  def logicTMonadError[F[_, _], E](implicit F0: MonadError[F, E]): MonadError[Lambda[(A, B) => LogicT[F[A, ?], B]], E] =
     new LogicTMonadError[F, E] {
       implicit def F: MonadError[F, E] = F0
     }
 }
 
-private trait LogicTMonadReader[F[_, _], R] extends MonadReader[({ type G[A, B] = LogicT[({ type H[T] = F[A, T] })#H, B] })#G, R] {
+private trait LogicTMonadReader[F[_, _], R] extends MonadReader[Lambda[(A, B) => LogicT[F[A, ?], B]], R] {
 
   implicit def F: MonadReader[F, R]
 
@@ -127,7 +127,7 @@ private trait LogicTMonadReader[F[_, _], R] extends MonadReader[({ type G[A, B] 
   }
 }
 
-private trait LogicTMonadState[F[_, _], S] extends MonadState[({ type G[A, B] = LogicT[({ type H[T] = F[A, T] })#H, B] })#G, S] {
+private trait LogicTMonadState[F[_, _], S] extends MonadState[Lambda[(A, B) => LogicT[F[A, ?], B]], S] {
 
   implicit def F: MonadState[F, S]
 
@@ -141,7 +141,7 @@ private trait LogicTMonadState[F[_, _], S] extends MonadState[({ type G[A, B] = 
   def put(s: S) = LogicT.logicTMonadTrans.liftM[G, Unit](F.put(s))
 }
 
-private trait LogicTMonadError[F[_, _], E] extends MonadError[({ type G[A, B] = LogicT[({ type H[T] = F[A, T] })#H, B] })#G, E] {
+private trait LogicTMonadError[F[_, _], E] extends MonadError[Lambda[(A, B) => LogicT[F[A, ?], B]], E] {
 
   implicit def F: MonadError[F, E]
 
