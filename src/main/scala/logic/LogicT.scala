@@ -58,7 +58,7 @@ sealed abstract class LogicTInstances3 {
     def apply[G[_]: Monad] = logicTMonadPlus[G]
   }
 
-  implicit def logicTFoldable[F[_]](implicit T: Foldable[F], S: Monad[F]): Foldable[LogicT[F, ?]] = new Foldable[LogicT[F, ?]] {
+  implicit def logicTFoldable[F[_]](implicit T: Foldable[F], S: Applicative[F]): Foldable[LogicT[F, ?]] = new Foldable[LogicT[F, ?]] {
 
     def foldMap[A, B](fa: LogicT[F, A])(f: A => B)(implicit M: Monoid[B]) =
       T.fold(fa(S.pure(M.zero))(a => b => S.map(b)(M.append(f(a), _))))
