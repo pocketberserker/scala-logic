@@ -7,8 +7,8 @@ trait LogicT[F[_], A] {
 
   def apply[R](l: F[R])(f: A => F[R] => F[R]): F[R]
 
-  def observe(implicit M: ApplicativePlus[F]): F[A] =
-    this(M.empty)(a => Function.const(M.pure(a)))
+  def observe(implicit M: Applicative[F]): F[Option[A]] =
+    this(M.pure(None: Option[A]))(a => Function.const(M.pure(Some(a))))
 
   def observeAll(implicit M: Applicative[F]): F[List[A]] =
     this(M.pure(Nil: List[A]))(a => b => M.map(b)(a :: _))

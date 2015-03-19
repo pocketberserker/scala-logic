@@ -6,7 +6,7 @@ import LogicT._
 
 object Logic {
 
-  def observe[A](l: Logic[A])(implicit M: MonadPlus[Id]): Id[A] = l.observe
+  def observe[A](l: Logic[A]): Id[Option[A]] = l.observe
 
   def observeAll[A](l: Logic[A])(implicit M: Monad[Id]): Id[List[A]] = l.observeAll
 
