@@ -7,13 +7,13 @@ trait LogicT[F[_], A] {
 
   def apply[R](l: F[R])(f: A => F[R] => F[R]): F[R]
 
-  def observe(implicit M: MonadPlus[F]): F[A] =
+  def observe(implicit M: ApplicativePlus[F]): F[A] =
     this(M.empty)(a => Function.const(M.pure(a)))
 
-  def observeAll(implicit M: Monad[F]): F[List[A]] =
+  def observeAll(implicit M: Applicative[F]): F[List[A]] =
     this(M.pure(Nil: List[A]))(a => b => M.map(b)(a :: _))
 
-  def observeMany(n: Int)(implicit M: Monad[F], L: MonadLogic[LogicT[F, ?]]): F[List[A]] = {
+  def observeMany(n: Int)(implicit M: Applicative[F], L: MonadLogic[LogicT[F, ?]]): F[List[A]] = {
     def sk(o: Option[(A, LogicT[F, A])])(a: Any): F[List[A]] = o match {
       case None => M.pure(Nil)
       case Some((a, m)) => M.map(m.observeMany(n - 1))(a :: _)
