@@ -43,7 +43,7 @@ trait MonadLogicFunctions {
 
 trait MonadLogicInstances2 {
 
-  implicit def writerTLogic[F[_], W](implicit L0: MonadLogic[F], M0: Monoid[W]): MonadLogic[WriterT[F, W, ?]] = new WriterTMonadLogic[F, W] {
+  implicit def writerTMonadLogic[F[_], W](implicit L0: MonadLogic[F], M0: Monoid[W]): MonadLogic[WriterT[F, W, ?]] = new WriterTMonadLogic[F, W] {
     implicit def L: MonadLogic[F] = L0
     implicit def M: Monoid[W] = M0
   }
@@ -53,7 +53,7 @@ trait MonadLogicInstances1 extends MonadLogicInstances2 {
 
   import scalaz.StateT._
 
-  implicit def stateTLogic[F[_], S](implicit L: MonadLogic[F]): MonadLogic[StateT[F, S, ?]] = new MonadLogic[StateT[F, S, ?]] {
+  implicit def stateTMonadLogic[F[_], S](implicit L: MonadLogic[F]): MonadLogic[StateT[F, S, ?]] = new MonadLogic[StateT[F, S, ?]] {
     def point[A](a: => A) = stateTMonadPlus[S, F].point[A](a)
     def bind[A, B](fa: StateT[F, S, A])(f: A => StateT[F, S, B]) = stateTMonadPlus[S, F].bind[A, B](fa)(f)
     def empty[A] = stateTMonadPlus[S, F].empty[A]
@@ -85,7 +85,7 @@ trait MonadLogicInstances0 extends MonadLogicInstances1 {
   import scalaz.Kleisli._
 
   // MonadLogic[ReaderT[F, E, ?]]
-  implicit def kleisliLogic[F[_], E](implicit L: MonadLogic[F]): MonadLogic[Kleisli[F, E, ?]] = new MonadLogic[Kleisli[F, E, ?]] {
+  implicit def kleisliMonadLogic[F[_], E](implicit L: MonadLogic[F]): MonadLogic[Kleisli[F, E, ?]] = new MonadLogic[Kleisli[F, E, ?]] {
     def point[A](a: => A) = kleisliMonadPlus[F, E].point[A](a)
     def bind[A, B](fa: Kleisli[F, E, A])(f: A => Kleisli[F, E, B]) = kleisliMonadPlus[F, E].bind[A, B](fa)(f)
     def empty[A] = kleisliMonadPlus[F, E].empty[A]
@@ -104,7 +104,7 @@ trait MonadLogicInstances extends MonadLogicInstances0 {
 
   import scalaz.std.list.listInstance
 
-  implicit val listLogic: MonadLogic[List] = new MonadLogic[List] {
+  implicit val listMonadLogic: MonadLogic[List] = new MonadLogic[List] {
     def split[A](l: List[A]) = l match {
       case Nil => pure(None)
       case x::xs => pure(Some((x, xs)))
