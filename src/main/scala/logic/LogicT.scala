@@ -60,7 +60,7 @@ sealed abstract class LogicTInstances3 {
     }
   }
 
-  implicit def logicTMonadTrans: MonadTrans[LogicT] = new MonadTrans[LogicT] {
+  implicit val logicTMonadTrans: MonadTrans[LogicT] = new MonadTrans[LogicT] {
     def liftM[G[_] : Monad, A](m: G[A]) = new LogicT[G, A] {
       def apply[R](l: G[R])(f: A => G[R] => G[R]): G[R] = m.flatMap(a => f(a)(l))
     }
