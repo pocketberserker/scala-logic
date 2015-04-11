@@ -44,13 +44,14 @@ object ScalaLogicBuild extends Build {
       else
         Nil
     },
+    testFrameworks += new TestFramework("scalaprops.ScalapropsFramework"),
     libraryDependencies ++= Seq(
       scalaz,
-      scalacheck % "test",
-      scalazScalaCheckBinding % "test"
+      "com.github.xuwei-k" %% "scalaprops" % "0.1.3" % "test"
     ),
     resolvers += "bintray/non" at "http://dl.bintray.com/non/maven",
     addCompilerPlugin("org.spire-math" % "kind-projector" % "0.5.2"  cross CrossVersion.binary),
+    parallelExecution in Test := false,
     buildInfoKeys := Seq[BuildInfoKey](
       organization,
       name,
@@ -125,7 +126,5 @@ object ScalaLogicBuild extends Build {
   object Dependencies {
     val scalazVersion = "7.1.2"
     val scalaz = "org.scalaz" %% "scalaz-core" % scalazVersion
-    val scalacheck = "org.scalacheck" %% "scalacheck" % "1.11.4"
-    val scalazScalaCheckBinding = "org.scalaz" %% "scalaz-scalacheck-binding" % scalazVersion
   }
 }
