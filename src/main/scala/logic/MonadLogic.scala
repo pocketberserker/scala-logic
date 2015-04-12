@@ -27,7 +27,9 @@ trait MonadLogic[F[_]] extends MonadPlus[F] {
     bind(bind(split(m))(maybe(_, empty[(A, F[A])])(pure(_)))) { case (a, _) => pure(a) }
 }
 
-object MonadLogic extends MonadLogicInstances with MonadLogicFunctions
+object MonadLogic extends MonadLogicInstances with MonadLogicFunctions {
+  @inline def apply[F[_]](implicit F: MonadLogic[F]): MonadLogic[F] = F
+}
 
 trait MonadLogicFunctions {
 
