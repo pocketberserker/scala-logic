@@ -1,7 +1,6 @@
 package logic
 
 import scalaz._
-import LogicT._
 
 object Logic {
 
