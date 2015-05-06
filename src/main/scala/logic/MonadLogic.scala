@@ -33,8 +33,8 @@ object MonadLogic extends MonadLogicInstances with MonadLogicFunctions {
 
 trait MonadLogicFunctions {
 
-  def reflect[F[_], A](a: Option[(A, F[A])])(implicit L: MonadLogic[F]): F[A] =
-    a match {
+  def reflect[F[_], A](x: Option[(A, F[A])])(implicit L: MonadLogic[F]): F[A] =
+    x match {
       case None => L.empty
       case Some((a, m)) => L.plus(L.pure(a), m)
     }
