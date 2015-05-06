@@ -13,6 +13,12 @@ object ScalaLogicBuild extends Build {
     sys.process.Process("git rev-parse HEAD").lines_!.head
   ).getOrElse("master")
 
+  private[this] val unusedWarnings = (
+    "-Ywarn-unused" ::
+    "-Ywarn-unused-import" ::
+    Nil
+  )
+
   lazy val buildSettings = Seq(
     ReleasePlugin.releaseSettings,
     sonatypeSettings,
@@ -34,7 +40,7 @@ object ScalaLogicBuild extends Build {
     ),
     scalacOptions ++= {
       if(scalaVersion.value.startsWith("2.11"))
-        Seq("-Ywarn-unused", "-Ywarn-unused-import")
+        unusedWarnings
       else
         Nil
     },
@@ -106,6 +112,8 @@ object ScalaLogicBuild extends Build {
       val stripTestScope = stripIf { n => n.label == "dependency" && (n \ "scope").text == "test" }
       new RuleTransformer(stripTestScope).transform(node)(0)
     }
+  ) ++ Seq(Compile, Test).flatMap(c =>
+    scalacOptions in (c, console) ~= {_.filterNot(unusedWarnings.toSet)}
   )
 
   lazy val logic = Project(
