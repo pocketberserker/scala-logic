@@ -31,7 +31,7 @@ sealed abstract class LogicSpec extends Scalaprops{
 }
 
 object LogicTest extends LogicSpec{
-  val testLaws =
+  val laws =
     Properties.either(
       "Logic",
       scalazlaws.monadPlus.all[Logic],
@@ -40,22 +40,22 @@ object LogicTest extends LogicSpec{
 }
 
 object ListLogicTest extends LogicSpec {
-  val testListMonadLogicLaws =
+  val listMonadLogicLaws =
     MonadLogicLaw.laws[List]
 }
 
 object StateTLogicTest extends LogicSpec {
-  val testStateT =
+  val stateT =
     MonadLogicLaw.laws[StateT[List, Int, ?]]
 }
 
 object KleisliLogicTest extends LogicSpec {
-  val testKleisli =
+  val kleisli =
     MonadLogicLaw.laws[Kleisli[List, Int, ?]]
 }
 
 object WriterTLogicTest extends LogicSpec {
-  val testWriter =
+  val writer =
     MonadLogicLaw.laws[WriterT[List, Int, ?]]
 }
 

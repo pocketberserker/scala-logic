@@ -47,7 +47,8 @@ object ScalaLogicBuild extends Build {
     testFrameworks += new TestFramework("scalaprops.ScalapropsFramework"),
     libraryDependencies ++= Seq(
       scalaz,
-      "com.github.xuwei-k" %% "scalaprops" % "0.1.3" % "test"
+      scalaprops % "test",
+      scalazlaws % "test"
     ),
     resolvers += "bintray/non" at "http://dl.bintray.com/non/maven",
     addCompilerPlugin("org.spire-math" % "kind-projector" % "0.5.2"  cross CrossVersion.binary),
@@ -125,6 +126,9 @@ object ScalaLogicBuild extends Build {
 
   object Dependencies {
     val scalazVersion = "7.1.2"
+    val scalapropsVersion = "0.1.6"
     val scalaz = "org.scalaz" %% "scalaz-core" % scalazVersion
+    val scalaprops = "com.github.scalaprops" %% "scalaprops" % scalapropsVersion
+    val scalazlaws = "com.github.scalaprops" %% "scalaprops-scalazlaws" % scalapropsVersion
   }
 }
