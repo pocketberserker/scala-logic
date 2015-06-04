@@ -5,6 +5,7 @@ import xerial.sbt.Sonatype._
 import ReleaseStateTransformations._
 import com.typesafe.sbt.pgp.PgpKeys
 import sbtbuildinfo.Plugin._
+import scalaprops.ScalapropsPlugin.autoImport._
 
 object ScalaLogicBuild extends Build {
   import Dependencies._
@@ -22,7 +23,8 @@ object ScalaLogicBuild extends Build {
   lazy val buildSettings = Seq(
     ReleasePlugin.releaseSettings,
     sonatypeSettings,
-    buildInfoSettings
+    buildInfoSettings,
+    scalapropsWithScalazlaws
   ).flatten ++ Seq(
     scalaVersion := "2.11.6",
     crossScalaVersions := Seq("2.10.5", scalaVersion.value),
@@ -44,15 +46,12 @@ object ScalaLogicBuild extends Build {
       else
         Nil
     },
-    testFrameworks += new TestFramework("scalaprops.ScalapropsFramework"),
+    scalapropsVersion := Version.scalaprops,
     libraryDependencies ++= Seq(
-      scalaz,
-      scalaprops % "test",
-      scalazlaws % "test"
+      scalaz
     ),
     resolvers += "bintray/non" at "http://dl.bintray.com/non/maven",
     addCompilerPlugin("org.spire-math" % "kind-projector" % "0.5.2"  cross CrossVersion.binary),
-    parallelExecution in Test := false,
     buildInfoKeys := Seq[BuildInfoKey](
       organization,
       name,
@@ -61,7 +60,7 @@ object ScalaLogicBuild extends Build {
       sbtVersion,
       scalacOptions,
       licenses,
-      "scalazVersion" -> scalazVersion
+      "scalazVersion" -> Version.scalaz
     ),
     buildInfoPackage := "logic",
     buildInfoObject := "BuildInfoScalaLogic",
@@ -125,10 +124,12 @@ object ScalaLogicBuild extends Build {
   )
 
   object Dependencies {
-    val scalazVersion = "7.1.2"
-    val scalapropsVersion = "0.1.6"
-    val scalaz = "org.scalaz" %% "scalaz-core" % scalazVersion
-    val scalaprops = "com.github.scalaprops" %% "scalaprops" % scalapropsVersion
-    val scalazlaws = "com.github.scalaprops" %% "scalaprops-scalazlaws" % scalapropsVersion
+
+    object Version {
+      val scalaz = "7.1.2"
+      val scalaprops = "0.1.6"
+    }
+
+    val scalaz = "org.scalaz" %% "scalaz-core" % Version.scalaz
   }
 }
