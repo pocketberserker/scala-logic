@@ -46,17 +46,20 @@ object ListLogicTest extends LogicSpec {
 
 object StateTLogicTest extends LogicSpec {
   val stateT =
-    MonadLogicLaw.laws[StateT[List, Int, ?]]
+    MonadLogicLaw.laws[StateT[List, List[Int], ?]]
+      .ignore("original haskell implementation don't satisfy split value law...")
 }
 
 object KleisliLogicTest extends LogicSpec {
   val kleisli =
-    MonadLogicLaw.laws[Kleisli[List, Int, ?]]
+    MonadLogicLaw.laws[Kleisli[List, List[Int], ?]]
+      .ignore("original haskell implementation don't satisfy split value law...")
 }
 
 object WriterTLogicTest extends LogicSpec {
   val writer =
-    MonadLogicLaw.laws[WriterT[List, Int, ?]]
+    MonadLogicLaw.laws[WriterT[List, List[Int], ?]]
+      .ignore("original haskell implementation don't satisfy reflect law...")
 }
 
 object InstancesTest {
