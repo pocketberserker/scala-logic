@@ -8,6 +8,6 @@ object Logic {
 
   def observeAll[A](l: Logic[A]): List[A] = l.observeAll
 
-  def observeMany[A](l: Logic[A], n: Int)(implicit L: MonadLogic[Logic]): List[A] =
+  def observeMany[A](l: Logic[A], n: Int): List[A] =
     l.observeMany(n)
 }
