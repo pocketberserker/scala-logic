@@ -51,7 +51,7 @@ object ScalaLogicBuild extends Build {
       scalaz
     ),
     resolvers += "bintray/non" at "http://dl.bintray.com/non/maven",
-    addCompilerPlugin("org.spire-math" % "kind-projector" % "0.5.2"  cross CrossVersion.binary),
+    addCompilerPlugin("org.spire-math" % "kind-projector" % "0.5.4" cross CrossVersion.binary),
     buildInfoKeys := Seq[BuildInfoKey](
       organization,
       name,
