@@ -1,8 +1,8 @@
 import sbt._
 import Keys._
-import sbtrelease._
+import sbtrelease.ReleaseStateTransformations._
+import sbtrelease.ReleasePlugin.autoImport._
 import xerial.sbt.Sonatype._
-import ReleaseStateTransformations._
 import com.typesafe.sbt.pgp.PgpKeys
 import sbtbuildinfo.Plugin._
 import scalaprops.ScalapropsPlugin.autoImport._
@@ -21,7 +21,6 @@ object ScalaLogicBuild extends Build {
   )
 
   lazy val buildSettings = Seq(
-    ReleasePlugin.releaseSettings,
     sonatypeSettings,
     buildInfoSettings,
     scalapropsWithScalazlaws
@@ -65,7 +64,7 @@ object ScalaLogicBuild extends Build {
     buildInfoPackage := "logic",
     buildInfoObject := "BuildInfoScalaLogic",
     sourceGenerators in Compile <+= buildInfo,
-    ReleasePlugin.ReleaseKeys.releaseProcess := Seq[ReleaseStep](
+    releaseProcess := Seq[ReleaseStep](
       checkSnapshotDependencies,
       inquireVersions,
       runClean,
