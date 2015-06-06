@@ -9,9 +9,9 @@ object FunctionEqual extends FunctionEqual(30)
 sealed class FunctionEqual(size: Int) {
   implicit def f1[A1: Gen, B](implicit B: Equal[B]): Equal[A1 => B] =
     Equal.equal( (x, y) =>
-      Foldable[IList].all(
-        Gen[IList[A1]].f(size, Rand.standard(Random.nextLong()))._1
-      )(a => B.equal(x(a), y(a)))
+      Gen[A1].samples(listSize = size, seed = System.nanoTime).forall{
+        a => B.equal(x(a), y(a))
+      }
     )
 
   implicit def f2[A1: Gen, A2: Gen, B](implicit B: Equal[B]): Equal[(A1, A2) => B] =
