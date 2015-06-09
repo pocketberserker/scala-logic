@@ -7,12 +7,12 @@ import scalaprops._
 object FunctionEqual extends FunctionEqual(30)
 
 sealed class FunctionEqual(size: Int) {
-  implicit def f1[A1: Gen, B](implicit B: Equal[B]): Equal[A1 => B] =
+  implicit def f1[A1: Gen, B](implicit B: Equal[B]): Equal[A1 => B] = {
+    val values = Gen[A1].samples(listSize = size, seed = System.nanoTime)
     Equal.equal( (x, y) =>
-      Gen[A1].samples(listSize = size, seed = System.nanoTime).forall{
-        a => B.equal(x(a), y(a))
-      }
+      values.forall{ a => B.equal(x(a), y(a)) }
     )
+  }
 
   implicit def f2[A1: Gen, A2: Gen, B](implicit B: Equal[B]): Equal[(A1, A2) => B] =
     f1[(A1, A2), B].contramap(_.tupled)
