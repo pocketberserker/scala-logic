@@ -45,6 +45,7 @@ object ScalaLogicBuild extends Build {
       else
         Nil
     },
+    fullResolvers ~= {_.filterNot(_.name == "jcenter")},
     scalapropsVersion := Version.scalaprops,
     libraryDependencies ++= Seq(
       scalaz
