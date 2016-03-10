@@ -4,7 +4,8 @@ import sbtrelease.ReleaseStateTransformations._
 import sbtrelease.ReleasePlugin.autoImport._
 import xerial.sbt.Sonatype._
 import com.typesafe.sbt.pgp.PgpKeys
-import sbtbuildinfo.Plugin._
+import sbtbuildinfo.BuildInfoPlugin
+import sbtbuildinfo.BuildInfoPlugin.autoImport._
 import scalaprops.ScalapropsPlugin.autoImport._
 
 object ScalaLogicBuild extends Build {
@@ -22,7 +23,7 @@ object ScalaLogicBuild extends Build {
 
   lazy val buildSettings = Seq(
     sonatypeSettings,
-    buildInfoSettings,
+    BuildInfoPlugin.projectSettings,
     scalapropsWithScalazlaws
   ).flatten ++ Seq(
     scalaVersion := "2.11.7",
@@ -63,7 +64,6 @@ object ScalaLogicBuild extends Build {
     ),
     buildInfoPackage := "logic",
     buildInfoObject := "BuildInfoScalaLogic",
-    sourceGenerators in Compile <+= buildInfo,
     releaseProcess := Seq[ReleaseStep](
       checkSnapshotDependencies,
       inquireVersions,
