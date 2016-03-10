@@ -1,7 +1,6 @@
 package logic
 
 import scalaz._
-import scala.util.Random
 import scalaprops._
 
 object FunctionEqual extends FunctionEqual(30)
