@@ -26,7 +26,7 @@ object ScalaLogicBuild extends Build {
     BuildInfoPlugin.projectSettings,
     scalapropsWithScalazlaws
   ).flatten ++ Seq(
-    scalaVersion := "2.11.7",
+    scalaVersion := "2.11.8",
     crossScalaVersions := Seq("2.10.6", scalaVersion.value),
     resolvers += Opts.resolver.sonatypeReleases,
     scalacOptions ++= (
