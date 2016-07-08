@@ -126,7 +126,7 @@ object ScalaLogicBuild extends Build {
 
     object Version {
       val scalaz = "7.2.0"
-      val scalaprops = "0.2.0"
+      val scalaprops = "0.3.2"
     }
 
     val scalaz = "org.scalaz" %% "scalaz-core" % Version.scalaz
