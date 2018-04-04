@@ -13,12 +13,14 @@ val unusedWarnings = (
   Nil
 )
 
+val Scala211 = "2.11.12"
+
 lazy val buildSettings = Seq(
   BuildInfoPlugin.projectSettings,
   scalapropsWithScalazlaws
 ).flatten ++ Seq(
-  scalaVersion := "2.11.8",
-  crossScalaVersions := Seq("2.10.6", scalaVersion.value),
+  scalaVersion := Scala211,
+  crossScalaVersions := Seq("2.10.7", Scala211),
   resolvers += Opts.resolver.sonatypeReleases,
   scalacOptions ++= (
     "-deprecation" ::
