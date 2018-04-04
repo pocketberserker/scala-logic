@@ -23,7 +23,6 @@ lazy val buildSettings = Seq(
   scalacOptions ++= (
     "-deprecation" ::
     "-unchecked" ::
-    "-Xlint" ::
     "-feature" ::
     "-language:existentials" ::
     "-language:higherKinds" ::
@@ -32,10 +31,12 @@ lazy val buildSettings = Seq(
     Nil
   ),
   scalacOptions ++= {
-    if(scalaVersion.value.startsWith("2.11"))
-      unusedWarnings
-    else
-      Nil
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, v)) if v >= 11 =>
+        unusedWarnings
+      case _ =>
+        Nil
+    }
   },
   scalapropsVersion := "0.5.4",
   publishTo := sonatypePublishTo.value,
