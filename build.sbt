@@ -4,7 +4,7 @@ val scalazVersion = "7.2.0"
 val scalaz = "org.scalaz" %% "scalaz-core" % scalazVersion
 
 def gitHash: String = scala.util.Try(
-  sys.process.Process("git rev-parse HEAD").lines_!.head
+  sys.process.Process("git rev-parse HEAD").lineStream.head
 ).getOrElse("master")
 
 val unusedWarnings = (
@@ -44,7 +44,7 @@ lazy val buildSettings = Seq(
   ),
   resolvers += "bintray/non" at "http://dl.bintray.com/non/maven",
   addCompilerPlugin("org.spire-math" % "kind-projector" % "0.7.1" cross CrossVersion.binary),
-  buildInfoKeys := Seq[BuildInfoKey](
+  buildInfoKeys := BuildInfoKey.ofN(
     organization,
     name,
     version,
@@ -110,6 +110,7 @@ lazy val buildSettings = Seq(
 
 lazy val logic = Project(
   id = "scala-logic",
-  base = file("."),
-  settings = buildSettings
+  base = file(".")
+).settings(
+  buildSettings
 )
