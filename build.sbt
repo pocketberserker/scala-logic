@@ -42,8 +42,7 @@ lazy val buildSettings = Seq(
   libraryDependencies ++= Seq(
     scalaz
   ),
-  resolvers += "bintray/non" at "http://dl.bintray.com/non/maven",
-  addCompilerPlugin("org.spire-math" % "kind-projector" % "0.7.1" cross CrossVersion.binary),
+  addCompilerPlugin("org.spire-math" % "kind-projector" % "0.9.6" cross CrossVersion.binary),
   buildInfoKeys := BuildInfoKey.ofN(
     organization,
     name,
