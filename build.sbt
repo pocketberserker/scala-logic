@@ -1,6 +1,6 @@
 import sbtrelease.ReleaseStateTransformations._
 
-val scalazVersion = "7.2.0"
+val scalazVersion = "7.2.20"
 val scalaz = "org.scalaz" %% "scalaz-core" % scalazVersion
 
 def gitHash: String = scala.util.Try(
