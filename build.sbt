@@ -20,7 +20,7 @@ lazy val buildSettings = Seq(
   scalapropsWithScalazlaws
 ).flatten ++ Seq(
   scalaVersion := Scala211,
-  crossScalaVersions := Seq("2.10.7", Scala211),
+  crossScalaVersions := Seq("2.10.7", Scala211, "2.12.4", "2.13.0-M3"),
   resolvers += Opts.resolver.sonatypeReleases,
   scalacOptions ++= (
     "-deprecation" ::
