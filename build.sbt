@@ -37,7 +37,7 @@ lazy val buildSettings = Seq(
     else
       Nil
   },
-  scalapropsVersion := "0.3.2",
+  scalapropsVersion := "0.5.4",
   publishTo := sonatypePublishTo.value,
   libraryDependencies ++= Seq(
     scalaz
