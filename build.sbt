@@ -1,6 +1,6 @@
 import sbtrelease.ReleaseStateTransformations._
 
-val scalazVersion = "7.2.20"
+val scalazVersion = "7.2.25"
 val scalaz = "org.scalaz" %% "scalaz-core" % scalazVersion
 
 def gitHash: String = scala.util.Try(
@@ -20,7 +20,7 @@ lazy val buildSettings = Seq(
   scalapropsWithScalazlaws
 ).flatten ++ Seq(
   scalaVersion := Scala211,
-  crossScalaVersions := Seq("2.10.7", Scala211, "2.12.4", "2.13.0-M3"),
+  crossScalaVersions := Seq("2.10.7", Scala211, "2.12.6", "2.13.0-M4"),
   resolvers += Opts.resolver.sonatypeReleases,
   scalacOptions ++= (
     "-deprecation" ::
@@ -40,12 +40,12 @@ lazy val buildSettings = Seq(
         Nil
     }
   },
-  scalapropsVersion := "0.5.4",
+  scalapropsVersion := "0.5.5",
   publishTo := sonatypePublishTo.value,
   libraryDependencies ++= Seq(
     scalaz
   ),
-  addCompilerPlugin("org.spire-math" % "kind-projector" % "0.9.6" cross CrossVersion.binary),
+  addCompilerPlugin("org.spire-math" % "kind-projector" % "0.9.7" cross CrossVersion.binary),
   buildInfoKeys := BuildInfoKey.ofN(
     organization,
     name,
