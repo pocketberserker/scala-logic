@@ -4,6 +4,7 @@ import scalaz._
 import scalaz.std.AllInstances._
 import FunctionEqual._
 import scalaprops._
+import scalaprops.ScalapropsScalaz._
 
 sealed abstract class LogicSpec extends Scalaprops {
 

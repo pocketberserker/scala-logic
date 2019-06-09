@@ -1,7 +1,6 @@
 package logic
 
 import scalaz._
-import scalaz.std.string._
 import scalaprops._
 
 object MonadLogicLaw {

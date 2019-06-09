@@ -1,12 +1,13 @@
 language: scala
+dist: xenial
 sudo: false
 scala:
    - 2.10.7
    - 2.11.12
-   - 2.12.6
-   - 2.13.0-M4
+   - 2.12.8
+   - 2.13.0
 jdk:
-  - oraclejdk8
+  - openjdk8
 script:
   - sbt "++ ${TRAVIS_SCALA_VERSION}!" test
 cache:

@@ -1,26 +1,30 @@
 import sbtrelease.ReleaseStateTransformations._
 
-val scalazVersion = "7.2.25"
+val scalazVersion = "7.2.27"
 val scalaz = "org.scalaz" %% "scalaz-core" % scalazVersion
 
 def gitHash: String = scala.util.Try(
   sys.process.Process("git rev-parse HEAD").lineStream.head
 ).getOrElse("master")
 
-val unusedWarnings = (
-  "-Ywarn-unused" ::
-  "-Ywarn-unused-import" ::
-  Nil
+val unusedWarnings = Def.setting(
+  CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((2, 10)) =>
+      Nil
+    case Some((2, 11)) =>
+      Seq("-Ywarn-unused-import")
+    case _ =>
+      Seq("-Ywarn-unused:imports")
+  }
 )
 
 val Scala211 = "2.11.12"
 
-lazy val buildSettings = Seq(
+lazy val buildSettings = Def.settings(
   BuildInfoPlugin.projectSettings,
-  scalapropsWithScalazlaws
-).flatten ++ Seq(
+  scalapropsWithScalaz,
   scalaVersion := Scala211,
-  crossScalaVersions := Seq("2.10.7", Scala211, "2.12.6", "2.13.0-M4"),
+  crossScalaVersions := Seq("2.10.7", Scala211, "2.12.8", "2.13.0"),
   resolvers += Opts.resolver.sonatypeReleases,
   scalacOptions ++= (
     "-deprecation" ::
@@ -32,20 +36,13 @@ lazy val buildSettings = Seq(
     "-language:reflectiveCalls" ::
     Nil
   ),
-  scalacOptions ++= {
-    CrossVersion.partialVersion(scalaVersion.value) match {
-      case Some((2, v)) if v >= 11 =>
-        unusedWarnings
-      case _ =>
-        Nil
-    }
-  },
-  scalapropsVersion := "0.5.5",
+  scalacOptions ++= unusedWarnings.value,
+  scalapropsVersion := "0.6.0",
   publishTo := sonatypePublishTo.value,
   libraryDependencies ++= Seq(
     scalaz
   ),
-  addCompilerPlugin("org.spire-math" % "kind-projector" % "0.9.7" cross CrossVersion.binary),
+  addCompilerPlugin("org.typelevel" % "kind-projector" % "0.10.3" cross CrossVersion.binary),
   buildInfoKeys := BuildInfoKey.ofN(
     organization,
     name,
@@ -105,9 +102,10 @@ lazy val buildSettings = Seq(
     }
     val stripTestScope = stripIf { n => n.label == "dependency" && (n \ "scope").text == "test" }
     new RuleTransformer(stripTestScope).transform(node)(0)
-  }
-) ++ Seq(Compile, Test).flatMap(c =>
-  scalacOptions in (c, console) ~= {_.filterNot(unusedWarnings.toSet)}
+  },
+  Seq(Compile, Test).flatMap(c =>
+    scalacOptions in (c, console) --= unusedWarnings.value
+  )
 )
 
 lazy val logic = Project(
