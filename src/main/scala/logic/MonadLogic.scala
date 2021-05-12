@@ -45,7 +45,7 @@ trait MonadLogicFunctions {
 
 trait MonadLogicInstances2 {
 
-  implicit def writerTMonadLogic[F[_], W](implicit L0: MonadLogic[F], M0: Monoid[W]): MonadLogic[WriterT[W, F, ?]] = new WriterTMonadLogic[F, W] {
+  implicit def writerTMonadLogic[F[_], W](implicit L0: MonadLogic[F], M0: Monoid[W]): MonadLogic[WriterT[W, F, *]] = new WriterTMonadLogic[F, W] {
     implicit def L: MonadLogic[F] = L0
     implicit def M: Monoid[W] = M0
   }
@@ -55,7 +55,7 @@ trait MonadLogicInstances1 extends MonadLogicInstances2 {
 
   import scalaz.StateT._
 
-  implicit def stateTMonadLogic[F[_], S](implicit L: MonadLogic[F]): MonadLogic[StateT[S, F, ?]] = new MonadLogic[StateT[S, F, ?]] {
+  implicit def stateTMonadLogic[F[_], S](implicit L: MonadLogic[F]): MonadLogic[StateT[S, F, *]] = new MonadLogic[StateT[S, F, *]] {
     def point[A](a: => A) = stateTMonadPlus[S, F].point[A](a)
     def bind[A, B](fa: StateT[S, F, A])(f: A => StateT[S, F, B]) = stateTMonadPlus[S, F].bind[A, B](fa)(f)
     def empty[A] = stateTMonadPlus[S, F].empty[A]
@@ -86,8 +86,8 @@ trait MonadLogicInstances0 extends MonadLogicInstances1 {
 
   import scalaz.Kleisli._
 
-  // MonadLogic[ReaderT[F, E, ?]]
-  implicit def kleisliMonadLogic[F[_], E](implicit L: MonadLogic[F]): MonadLogic[Kleisli[F, E, ?]] = new MonadLogic[Kleisli[F, E, ?]] {
+  // MonadLogic[ReaderT[F, E, *]]
+  implicit def kleisliMonadLogic[F[_], E](implicit L: MonadLogic[F]): MonadLogic[Kleisli[F, E, *]] = new MonadLogic[Kleisli[F, E, *]] {
     def point[A](a: => A) = kleisliMonadPlus[F, E].point[A](a)
     def bind[A, B](fa: Kleisli[F, E, A])(f: A => Kleisli[F, E, B]) = kleisliMonadPlus[F, E].bind[A, B](fa)(f)
     def empty[A] = kleisliMonadPlus[F, E].empty[A]
@@ -118,7 +118,7 @@ trait MonadLogicInstances extends MonadLogicInstances0 {
   }
 }
 
-private trait WriterTMonadLogic[F[_], W] extends MonadLogic[WriterT[W, F, ?]] {
+private trait WriterTMonadLogic[F[_], W] extends MonadLogic[WriterT[W, F, *]] {
 
   implicit def L: MonadLogic[F]
   implicit def M: Monoid[W]

@@ -47,31 +47,31 @@ object ListLogicTest extends LogicSpec {
 
 object StateTLogicTest extends LogicSpec {
   val stateT =
-    MonadLogicLaw.laws[StateT[List[Int], List, ?]]
+    MonadLogicLaw.laws[StateT[List[Int], List, *]]
       .ignore("original haskell implementation don't satisfy split value law...")
 }
 
 object KleisliLogicTest extends LogicSpec {
   val kleisli =
-    MonadLogicLaw.laws[Kleisli[List, List[Int], ?]]
+    MonadLogicLaw.laws[Kleisli[List, List[Int], *]]
       .ignore("original haskell implementation don't satisfy split value law...")
 }
 
 object WriterTLogicTest extends LogicSpec {
   val writer =
-    MonadLogicLaw.laws[WriterT[List[Int], List, ?]]
+    MonadLogicLaw.laws[WriterT[List[Int], List, *]]
       .ignore("original haskell implementation don't satisfy reflect law...")
 }
 
 object InstancesTest {
-  def functor[F[_] : Functor] = Functor[LogicT[F, ?]]
-  def apply[F[_] : Apply] = Apply[LogicT[F, ?]]
-  def plus[F[_] : Plus] = Plus[LogicT[F, ?]]
-  def empty[F[_] : PlusEmpty] = PlusEmpty[LogicT[F, ?]]
+  def functor[F[_] : Functor] = Functor[LogicT[F, *]]
+  def apply[F[_] : Apply] = Apply[LogicT[F, *]]
+  def plus[F[_] : Plus] = Plus[LogicT[F, *]]
+  def empty[F[_] : PlusEmpty] = PlusEmpty[LogicT[F, *]]
 
   // checking absence of ambiguity
-  def functor[F[_] : Monad] = Functor[LogicT[F, ?]]
-  def apply[F[_] : Monad] = Apply[LogicT[F, ?]]
-  def plus[F[_] : PlusEmpty] = Plus[LogicT[F, ?]]
-  def empty[F[_] : MonadPlus] = PlusEmpty[LogicT[F, ?]]
+  def functor[F[_] : Monad] = Functor[LogicT[F, *]]
+  def apply[F[_] : Monad] = Apply[LogicT[F, *]]
+  def plus[F[_] : PlusEmpty] = Plus[LogicT[F, *]]
+  def empty[F[_] : MonadPlus] = PlusEmpty[LogicT[F, *]]
 }
