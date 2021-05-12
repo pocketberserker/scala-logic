@@ -9,8 +9,6 @@ def gitHash: String = scala.util.Try(
 
 val unusedWarnings = Def.setting(
   CrossVersion.partialVersion(scalaVersion.value) match {
-    case Some((2, 10)) =>
-      Nil
     case Some((2, 11)) =>
       Seq("-Ywarn-unused-import")
     case _ =>
@@ -24,7 +22,7 @@ lazy val buildSettings = Def.settings(
   BuildInfoPlugin.projectSettings,
   scalapropsWithScalaz,
   scalaVersion := Scala211,
-  crossScalaVersions := Seq("2.10.7", Scala211, "2.12.13", "2.13.5"),
+  crossScalaVersions := Seq(Scala211, "2.12.13", "2.13.5"),
   scalacOptions ++= (
     "-deprecation" ::
     "-unchecked" ::
