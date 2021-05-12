@@ -45,7 +45,7 @@ trait MonadLogicFunctions {
 
 trait MonadLogicInstances2 {
 
-  implicit def writerTMonadLogic[F[_], W](implicit L0: MonadLogic[F], M0: Monoid[W]): MonadLogic[WriterT[F, W, ?]] = new WriterTMonadLogic[F, W] {
+  implicit def writerTMonadLogic[F[_], W](implicit L0: MonadLogic[F], M0: Monoid[W]): MonadLogic[WriterT[W, F, ?]] = new WriterTMonadLogic[F, W] {
     implicit def L: MonadLogic[F] = L0
     implicit def M: Monoid[W] = M0
   }
@@ -55,7 +55,7 @@ trait MonadLogicInstances1 extends MonadLogicInstances2 {
 
   import scalaz.StateT._
 
-  implicit def stateTMonadLogic[F[_], S](implicit L: MonadLogic[F]): MonadLogic[StateT[F, S, ?]] = new MonadLogic[StateT[F, S, ?]] {
+  implicit def stateTMonadLogic[F[_], S](implicit L: MonadLogic[F]): MonadLogic[StateT[S, F, ?]] = new MonadLogic[StateT[S, F, ?]] {
     def point[A](a: => A) = stateTMonadPlus[S, F].point[A](a)
     def bind[A, B](fa: StateT[S, F, A])(f: A => StateT[S, F, B]) = stateTMonadPlus[S, F].bind[A, B](fa)(f)
     def empty[A] = stateTMonadPlus[S, F].empty[A]
@@ -118,15 +118,15 @@ trait MonadLogicInstances extends MonadLogicInstances0 {
   }
 }
 
-private trait WriterTMonadLogic[F[_], W] extends MonadLogic[WriterT[F, W, ?]] {
+private trait WriterTMonadLogic[F[_], W] extends MonadLogic[WriterT[W, F, ?]] {
 
   implicit def L: MonadLogic[F]
   implicit def M: Monoid[W]
 
   def tell(w: W): WriterT[W, F, Unit] = WriterT(L.pure((w, ())))
 
-  def point[A](a: => A) = WriterT.writerTMonad[F, W].point[A](a)
-  def bind[A, B](fa: WriterT[W, F, A])(f: A => WriterT[W, F, B]) = WriterT.writerTMonad[F, W].bind[A, B](fa)(f)
+  def point[A](a: => A) = WriterT.writerTMonad[W, F].point[A](a)
+  def bind[A, B](fa: WriterT[W, F, A])(f: A => WriterT[W, F, B]) = WriterT.writerTMonad[W, F].bind[A, B](fa)(f)
   def empty[A] = WriterT(L.empty[(W, A)])
   def plus[A](a: WriterT[W, F, A], b: => WriterT[W, F, A]) = WriterT(L.plus(a.run, b.run))
 
