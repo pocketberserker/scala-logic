@@ -101,7 +101,7 @@ lazy val buildSettings = Def.settings(
     new RuleTransformer(stripTestScope).transform(node)(0)
   },
   Seq(Compile, Test).flatMap(c =>
-    scalacOptions in (c, console) --= unusedWarnings.value
+    (c / console / scalacOptions) --= unusedWarnings.value
   )
 )
 
