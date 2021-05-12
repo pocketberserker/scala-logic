@@ -1,7 +1,7 @@
 import sbtrelease.ReleaseStateTransformations._
 
 val scalazVersion = "7.3.3"
-val scalaz = "org.scalaz" %% "scalaz-core" % scalazVersion
+val scalaz = "org.scalaz" %% "scalaz-core" % scalazVersion cross CrossVersion.for3Use2_13
 
 def gitHash: String = scala.util.Try(
   sys.process.Process("git rev-parse HEAD").lineStream.head
@@ -22,7 +22,7 @@ lazy val buildSettings = Def.settings(
   BuildInfoPlugin.projectSettings,
   scalapropsWithScalaz,
   scalaVersion := Scala211,
-  crossScalaVersions := Seq(Scala211, "2.12.13", "2.13.5"),
+  crossScalaVersions := Seq(Scala211, "2.12.13", "2.13.5", "3.0.0-RC3"),
   scalacOptions ++= (
     "-deprecation" ::
     "-unchecked" ::
@@ -39,7 +39,26 @@ lazy val buildSettings = Def.settings(
   libraryDependencies ++= Seq(
     scalaz
   ),
-  addCompilerPlugin("org.typelevel" % "kind-projector" % "0.11.3" cross CrossVersion.full),
+  scalacOptions ++= {
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, _)) =>
+        Seq()
+      case _ =>
+        Seq(
+          "-Ykind-projector"
+        )
+    }
+  },
+  libraryDependencies ++= {
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, _)) =>
+        Seq(
+          compilerPlugin("org.typelevel" % "kind-projector" % "0.11.3" cross CrossVersion.full)
+        )
+      case _ =>
+        Nil
+    }
+  },
   buildInfoKeys ++= Seq[BuildInfoKey](
     organization,
     name,
