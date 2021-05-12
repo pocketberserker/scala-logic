@@ -20,7 +20,7 @@ final class MonadLogicOps[F[_],A] private[syntax](val self: F[A])(implicit val F
 
 trait ToMonadLogicOps extends ToMonadPlusOps[scalaz.MonadPlus] {
 
-  implicit def ToMonadLogicOps[F[_], A](v: F[A])(implicit F0: MonadLogic[F]) =
+  implicit def ToMonadLogicOps[F[_], A](v: F[A])(implicit F0: MonadLogic[F]): MonadLogicOps[F, A] =
     new MonadLogicOps[F,A](v)
 }
 
