@@ -41,7 +41,7 @@ lazy val buildSettings = Def.settings(
   libraryDependencies ++= Seq(
     scalaz
   ),
-  addCompilerPlugin("org.typelevel" % "kind-projector" % "0.11.0" cross CrossVersion.full),
+  addCompilerPlugin("org.typelevel" % "kind-projector" % "0.11.3" cross CrossVersion.full),
   buildInfoKeys ++= Seq[BuildInfoKey](
     organization,
     name,
