@@ -8,7 +8,7 @@ import scalaprops.ScalapropsScalaz._
 
 sealed abstract class LogicSpec extends Scalaprops {
 
-  protected[this] implicit def stateTEqual[F[_]: Monad, A, B](implicit F: Equal[A => F[(A, B)]]): Equal[StateT[F, A, B]] =
+  protected[this] implicit def stateTEqual[F[_]: Monad, A, B](implicit F: Equal[A => F[(A, B)]]): Equal[StateT[A, F, B]] =
     F.contramap(_.apply _)
 
   protected[this] implicit def kleisliEqual[F[_], A: Gen, B](implicit E: Equal[F[B]]): Equal[Kleisli[F, A, B]] =
@@ -47,7 +47,7 @@ object ListLogicTest extends LogicSpec {
 
 object StateTLogicTest extends LogicSpec {
   val stateT =
-    MonadLogicLaw.laws[StateT[List, List[Int], ?]]
+    MonadLogicLaw.laws[StateT[List[Int], List, ?]]
       .ignore("original haskell implementation don't satisfy split value law...")
 }
 
@@ -59,7 +59,7 @@ object KleisliLogicTest extends LogicSpec {
 
 object WriterTLogicTest extends LogicSpec {
   val writer =
-    MonadLogicLaw.laws[WriterT[List, List[Int], ?]]
+    MonadLogicLaw.laws[WriterT[List[Int], List, ?]]
       .ignore("original haskell implementation don't satisfy reflect law...")
 }
 

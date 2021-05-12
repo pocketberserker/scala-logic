@@ -18,7 +18,7 @@ final class MonadLogicOps[F[_],A] private[syntax](val self: F[A])(implicit val F
   final def lnot = MonadLogic.lnot(self)
 }
 
-trait ToMonadLogicOps extends ToMonadPlusOps {
+trait ToMonadLogicOps extends ToMonadPlusOps[scalaz.MonadPlus] {
 
   implicit def ToMonadLogicOps[F[_], A](v: F[A])(implicit F0: MonadLogic[F]) =
     new MonadLogicOps[F,A](v)
