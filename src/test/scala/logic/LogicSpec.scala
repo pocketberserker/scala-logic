@@ -22,7 +22,7 @@ sealed abstract class LogicSpec extends Scalaprops {
       }
     )
 
-  protected[this] implicit def logicEqual[A: Equal] =
+  protected[this] implicit def logicEqual[A: Equal]: Equal[Logic[A]] =
     Equal.equal[Logic[A]] { (a, b) =>
       import scalaz.syntax.equal._
       val f1 = (l: Logic[A]) => l.observe

@@ -16,7 +16,7 @@ object MonadLogicLaw {
 
   def reflect[F[_], A](implicit M: MonadLogic[F], F: Gen[F[A]],
                        A: Gen[A], E: Equal[F[A]]) =
-    Property.forAll { m: F[A] =>
+    Property.forAll { (m: F[A]) =>
       E.equal(M.bind(M.split(m))(MonadLogic.reflect(_)), m)
     }
 
