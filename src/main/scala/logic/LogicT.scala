@@ -67,7 +67,7 @@ sealed abstract class LogicTInstances2 extends LogicTInstances3 {
             a => fk => F.point(
               Some((
                 a,
-                MonadTrans[LogicT].liftM(fk).flatMap(x =>
+                Bind[F, *].bind(MonadTrans[LogicT].liftM(fk))(x =>
                   MonadLogic.reflect[LogicT[F, ?], A](x)
                 )
               ))
