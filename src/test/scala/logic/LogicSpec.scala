@@ -8,7 +8,7 @@ import scalaprops.ScalapropsScalaz._
 
 sealed abstract class LogicSpec extends Scalaprops {
 
-  protected[this] implicit def stateTEqual[F[_]: Monad, A, B](implicit F: Equal[A => F[(A, B)]]): Equal[StateT[F, A, B]] =
+  protected[this] implicit def stateTEqual[F[_]: Monad, A, B](implicit F: Equal[A => F[(A, B)]]): Equal[StateT[A, F, B]] =
     F.contramap(_.apply _)
 
   protected[this] implicit def kleisliEqual[F[_], A: Gen, B](implicit E: Equal[F[B]]): Equal[Kleisli[F, A, B]] =
