@@ -136,7 +136,6 @@ private trait LogicTMonadState[F[_], S] extends LogicTMonadPlus[F] with MonadSta
 
   implicit def F: MonadState[F, S]
 
-  def init = LogicT.logicTMonadTrans.liftM[F, S](F.init)
   def get = LogicT.logicTMonadTrans.liftM[F, S](F.get)
   def put(s: S) = LogicT.logicTMonadTrans.liftM[F, Unit](F.put(s))
 }
