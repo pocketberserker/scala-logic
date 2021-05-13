@@ -14,5 +14,5 @@ jobs:
       with:
         java-version: "adopt@1.8"
     - uses: coursier/cache-action@v6
-    - run: sbt -v "+ test"
+    - run: sbt -v "+ test" "++ 3.0.0-RC3!" compile
     - run: rm -rf ~/.ivy2/local
