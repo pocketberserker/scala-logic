@@ -53,7 +53,7 @@ lazy val buildSettings = Def.settings(
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, _)) =>
         Seq(
-          compilerPlugin("org.typelevel" % "kind-projector" % "0.11.3" cross CrossVersion.full)
+          compilerPlugin("org.typelevel" % "kind-projector" % "0.12.0" cross CrossVersion.full)
         )
       case _ =>
         Nil
