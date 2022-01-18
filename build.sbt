@@ -1,7 +1,7 @@
 import sbtrelease.ReleaseStateTransformations._
 
 val scalazVersion = "7.3.6"
-val scalaz = "org.scalaz" %% "scalaz-core" % scalazVersion cross CrossVersion.for3Use2_13
+val scalaz = "org.scalaz" %% "scalaz-core" % scalazVersion
 
 def gitHash: String = scala.util.Try(
   sys.process.Process("git rev-parse HEAD").lineStream.head
