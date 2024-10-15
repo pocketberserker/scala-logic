@@ -12,6 +12,7 @@ jobs:
       with:
         java-version: 8
         distribution: adopt
+    - uses: sbt/setup-sbt@v1
     - uses: coursier/cache-action@v6
     - run: sbt -v "+ test"
     - run: rm -rf ~/.ivy2/local
