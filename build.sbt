@@ -22,7 +22,7 @@ lazy val buildSettings = Def.settings(
   BuildInfoPlugin.projectSettings,
   scalapropsWithScalaz,
   scalaVersion := Scala211,
-  crossScalaVersions := Seq(Scala211, "2.12.20", "2.13.15", "3.5.1"),
+  crossScalaVersions := Seq(Scala211, "2.12.20", "2.13.15", "3.5.2"),
   scalacOptions ++= (
     "-deprecation" ::
     "-unchecked" ::
