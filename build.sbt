@@ -16,13 +16,13 @@ val unusedWarnings = Def.setting(
   }
 )
 
-val Scala211 = "2.11.12"
+val Scala212 = "2.12.21"
 
 lazy val buildSettings = Def.settings(
   BuildInfoPlugin.projectSettings,
   scalapropsWithScalaz,
-  scalaVersion := Scala211,
-  crossScalaVersions := Seq(Scala211, "2.12.21", "2.13.18", "3.8.0"),
+  scalaVersion := Scala212,
+  crossScalaVersions := Seq(Scala212, "2.13.18", "3.8.0"),
   scalacOptions ++= (
     "-deprecation" ::
     "-unchecked" ::
