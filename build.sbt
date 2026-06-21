@@ -35,7 +35,7 @@ lazy val buildSettings = Def.settings(
   ),
   scalacOptions ++= unusedWarnings.value,
   scalapropsVersion := "0.11.0",
-  publishTo := sonatypePublishTo.value,
+  publishTo := (if (isSnapshot.value) None else localStaging.value),
   libraryDependencies ++= Seq(
     scalaz
   ),
@@ -87,10 +87,6 @@ lazy val buildSettings = Def.settings(
     commitNextVersion,
     pushChanges
   ),
-  credentials ++= PartialFunction.condOpt(sys.env.get("SONATYPE_USER") -> sys.env.get("SONATYPE_PASS")){
-    case (Some(user), Some(pass)) =>
-      Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", user, pass)
-  }.toList,
   organization := "com.github.pocketberserker",
   homepage := Some(url("https://github.com/pocketberserker/scala-logic")),
   licenses := Seq("MIT License" -> url("http://www.opensource.org/licenses/mit-license.php")),
