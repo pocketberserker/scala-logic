@@ -11,7 +11,7 @@ jobs:
     - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
       with:
         java-version: 17
-        distribution: adopt
+        distribution: temurin
     - uses: sbt/setup-sbt@v1
     - uses: coursier/cache-action@v8
     - run: sbt -v "+ test"
