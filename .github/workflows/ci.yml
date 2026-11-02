@@ -13,6 +13,6 @@ jobs:
         java-version: 17
         distribution: temurin
     - uses: sbt/setup-sbt@v1
-    - uses: coursier/cache-action@v8
+    - uses: coursier/cache-action@v9
     - run: sbt -v "+ test"
     - run: rm -rf ~/.ivy2/local
