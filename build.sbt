@@ -34,7 +34,7 @@ lazy val buildSettings = Def.settings(
     Nil
   ),
   scalacOptions ++= unusedWarnings.value,
-  scalapropsVersion := "0.12.0",
+  scalapropsVersion := "0.12.1",
   publishTo := (if (isSnapshot.value) None else localStaging.value),
   libraryDependencies ++= Seq(
     scalaz
